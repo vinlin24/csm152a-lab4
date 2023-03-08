@@ -174,9 +174,11 @@ cython_debug/
 # Testing files
 *.txt
 *.log
+!requirements.txt
 
 # Video blobs
 *.mp4
 *.rgb
+*.bin
 
 ##### END: Custom addendums to the official .gitignore template. #####
