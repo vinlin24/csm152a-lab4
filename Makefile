@@ -8,5 +8,5 @@ all:
 
 .PHONY: clean
 clean:
-	-find . -type f -name '*.bin' -delete
-	-find . -type f -name '*.rgb' -delete
+	-find . -type f -name "*.bin" -delete
+	-find . -type f -name "*.rgb" -delete
