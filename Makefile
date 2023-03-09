@@ -10,8 +10,9 @@ all:
 %.bin: %.mp4
 	python converter/serialize.py $< $@ --txt $(basename $<)
 
-%.tgz: %
-	cd $< && tar -czf ../$@ .
+.SECONDARY: $(wildcard *.bin)
+%.tgz: %.bin
+	cd $(basename $<) && tar -czf ../$@ .
 
 .PHONY: clean
 clean:
