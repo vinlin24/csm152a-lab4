@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""serialize.py
-
-TODO.
+"""
+Serialize an mp4 video file into a sequence of compressed, 8-bit colored
+frames that will be loaded onto the FPGA.
 """
 
 import subprocess
 import sys
 from argparse import ArgumentParser
 from pathlib import Path
+from typing import Optional
 
 import numpy as np
 
@@ -25,12 +26,6 @@ FRAME_NROWS = 120
 PIXEL_NBYTES = 3
 
 FRAME_NBYTES = FRAME_NCOLS * FRAME_NROWS * PIXEL_NBYTES
-
-parser = ArgumentParser(prog=Path(sys.argv[0]).name,
-                        description="TODO.")
-
-parser.add_argument("mp4_path", metavar="MP4_FILE", type=Path)
-parser.add_argument("bin_path", metavar="BIN_FILE", type=Path)
 
 
 def run(script: str) -> subprocess.CompletedProcess[bytes]:
@@ -91,14 +86,27 @@ def write_bytes(compressed_pixels: np.ndarray, bin_path: Path) -> None:
     print(f"Wrote {num_kilobytes:.2f}K to {bin_path}.")
 
 
+parser = ArgumentParser(prog=Path(sys.argv[0]).name, description=__doc__)
+
+parser.add_argument("mp4_path", metavar="MP4_FILE", type=Path,
+                    help="path of video file to serialize")
+parser.add_argument("bin_path", metavar="BIN_FILE", type=Path, nargs="?",
+                    help="path of serialized binary, defaults to the stem of "
+                         "MP4_FILE + \".bin\"")
+
+
 def main() -> None:
     namespace = parser.parse_args()
     mp4_path: Path = namespace.mp4_path
-    bin_path: Path = namespace.bin_path
+    bin_path: Optional[Path] = namespace.bin_path
 
     rgb_path = mp4_to_rgb(mp4_path)
     rgb_frames = load_rgb_as_frames(rgb_path)
     compressed_frames = compress_rgb_frames(rgb_frames)
+
+    if bin_path is None:
+        bin_path = mp4_path.parent / Path(mp4_path.stem + ".bin")
+
     write_bytes(compressed_frames, bin_path)
 
 
