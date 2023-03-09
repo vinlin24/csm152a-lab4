@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-TODO.
+Display a frame within a video file.
 """
 
 import sys
 from argparse import ArgumentParser, ArgumentTypeError
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Optional
 
 import cv2
 import matplotlib.pyplot as plt
@@ -134,19 +134,19 @@ def nonnegative_float(value: str) -> float:
 
 
 parser.add_argument("input_path", metavar="FILE", type=Path,
-                    help="TODO.")
+                    help="video file whose frame is to be viewed")
 parser.add_argument("-t", "--type", metavar="FILE_FMT", dest="file_format",
                     choices=("mp4", "rgb", "bin"),
-                    help="TODO.")
+                    help="file type, inferred from file extension by default")
 
 offset_group = parser.add_mutually_exclusive_group(required=True)
 
 offset_group.add_argument("-f", "--frame", metavar="FRAME", dest="frame_num",
                           type=nonnegative_int,
-                          help="TODO.")
+                          help="frame number (counts from 0)")
 offset_group.add_argument("-s", "--seconds", metavar="SECS", dest="num_secs",
                           type=nonnegative_float,
-                          help="TODO.")
+                          help="seconds into the video")
 
 
 def main() -> None:
