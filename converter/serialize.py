@@ -7,6 +7,7 @@ TODO.
 
 import subprocess
 import sys
+from argparse import ArgumentParser
 from pathlib import Path
 
 import numpy as np
@@ -24,6 +25,12 @@ FRAME_NROWS = 120
 PIXEL_NBYTES = 3
 
 FRAME_NBYTES = FRAME_NCOLS * FRAME_NROWS * PIXEL_NBYTES
+
+parser = ArgumentParser(prog=Path(sys.argv[0]).name,
+                        description="TODO.")
+
+parser.add_argument("mp4_path", metavar="MP4_FILE", type=Path)
+parser.add_argument("bin_path", metavar="BIN_FILE", type=Path)
 
 
 def run(script: str) -> subprocess.CompletedProcess[bytes]:
@@ -82,13 +89,11 @@ def write_bytes(compressed_pixels: np.ndarray) -> None:
 
 
 def main() -> None:
-    try:
-        input_path = Path(sys.argv[1])
-    except IndexError:
-        sys.stderr.write(f"{sys.argv[0]}: Expected a file name.\n")
-        sys.exit(22)
+    namespace = parser.parse_args()
+    mp4_path: Path = namespace.mp4_path
+    bin_path: Path = namespace.bin_path
 
-    rgb_path = mp4_to_rgb(input_path)
+    rgb_path = mp4_to_rgb(mp4_path)
     rgb_frames = load_rgb_as_frames(rgb_path)
     compressed_frames = compress_rgb_frames(rgb_frames)
 
