@@ -21,7 +21,8 @@ FRAME_NCOLS = 160
 FRAME_NROWS = 120
 PIXEL_NBYTES = 3
 
-FRAME_NBYTES = FRAME_NCOLS * FRAME_NROWS * PIXEL_NBYTES
+NUM_PIXELS = FRAME_NCOLS * FRAME_NROWS
+FRAME_NBYTES = NUM_PIXELS * PIXEL_NBYTES
 
 
 def secs_to_frame_num(num_secs: int) -> int:
@@ -31,6 +32,18 @@ def secs_to_frame_num(num_secs: int) -> int:
 def secs_to_MMSS(num_secs: float) -> str:
     mins, secs = divmod(num_secs, 60)
     return f"{int(mins):02}:{secs:05.2f}"
+
+
+def to_24bit(compressed_frame: np.ndarray) -> np.ndarray:
+    r = (compressed_frame & 0b11100000) << 0
+    g = (compressed_frame & 0b00011100) << 3
+    b = (compressed_frame & 0b00000011) << 6
+    frame = np.expand_dims(compressed_frame, axis=-1)
+    frame = np.repeat(frame, 3, axis=-1)
+    frame[..., 0] = r
+    frame[..., 1] = g
+    frame[..., 2] = b
+    return frame
 
 
 def show_mp4_frame(mp4_path: Path, frame_num: int) -> None:
@@ -72,8 +85,24 @@ def show_rgb_frame(rgb_path: Path, frame_num: int) -> None:
     plt.show()
 
 
-def show_bin_frame(input_path: Path, frame_num: int) -> None:
-    pass
+def show_bin_frame(bin_path: Path, frame_num: int) -> None:
+    offset = frame_num * NUM_PIXELS
+
+    bin_bytes = np.fromfile(bin_path, dtype=np.uint8,
+                            count=NUM_PIXELS, offset=offset)
+
+    assert bin_bytes.size == NUM_PIXELS, \
+        f"{bin_path} has {bin_bytes.size} bytes, expected {NUM_PIXELS}."
+
+    compressed_frame = np.reshape(bin_bytes, (FRAME_NROWS, FRAME_NCOLS))
+    frame = to_24bit(compressed_frame)
+
+    num_secs = frame_num / FRAMES_PER_SEC
+    time_pos = secs_to_MMSS(num_secs)
+
+    plt.title(f"Frame {frame_num} ({time_pos})")
+    plt.imshow(frame)
+    plt.show()
 
 
 parser = ArgumentParser(prog=Path(sys.argv[0]).name, description=__doc__)
