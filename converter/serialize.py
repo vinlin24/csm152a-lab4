@@ -84,8 +84,11 @@ def compress_rgb_frames(frames: np.ndarray) -> np.ndarray:
     return compressed_frames
 
 
-def write_bytes(compressed_pixels: np.ndarray) -> None:
-    pass
+def write_bytes(compressed_pixels: np.ndarray, bin_path: Path) -> None:
+    linear_bytes = compressed_pixels.flatten()
+    linear_bytes.tofile(bin_path)
+    num_kilobytes = linear_bytes.size / 1000
+    print(f"Wrote {num_kilobytes:.2f}K to {bin_path}.")
 
 
 def main() -> None:
@@ -96,6 +99,7 @@ def main() -> None:
     rgb_path = mp4_to_rgb(mp4_path)
     rgb_frames = load_rgb_as_frames(rgb_path)
     compressed_frames = compress_rgb_frames(rgb_frames)
+    write_bytes(compressed_frames, bin_path)
 
 
 if __name__ == "__main__":
