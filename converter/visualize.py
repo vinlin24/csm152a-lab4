@@ -76,8 +76,9 @@ def show_rgb_frame(rgb_path: Path, frame_num: int) -> None:
     rgb_bytes = np.fromfile(rgb_path, dtype=np.uint8,
                             count=FRAME_NBYTES, offset=offset)
 
-    assert rgb_bytes.size == FRAME_NBYTES, \
-        f"{rgb_path} has {rgb_bytes.size} bytes, expected {FRAME_NBYTES}."
+    if rgb_bytes.size != FRAME_NBYTES:
+        raise ValueError(
+            f"{frame_num} is an invalid frame number for {rgb_path}.")
 
     frame = np.reshape(rgb_bytes, (FRAME_NROWS, FRAME_NCOLS, PIXEL_NBYTES))
 
@@ -91,8 +92,9 @@ def show_bin_frame(bin_path: Path, frame_num: int) -> None:
     bin_bytes = np.fromfile(bin_path, dtype=np.uint8,
                             count=NUM_PIXELS, offset=offset)
 
-    assert bin_bytes.size == NUM_PIXELS, \
-        f"{bin_path} has {bin_bytes.size} bytes, expected {NUM_PIXELS}."
+    if bin_bytes.size != NUM_PIXELS:
+        raise ValueError(
+            f"{frame_num} is an invalid frame number for {bin_path}.")
 
     compressed_frame = np.reshape(bin_bytes, (FRAME_NROWS, FRAME_NCOLS))
     frame = to_24bit(compressed_frame)
