@@ -60,8 +60,21 @@ def load_rgb_as_frames(rgb_path: Path) -> np.ndarray:
     return frames
 
 
-def compress_rgb(pixels: np.ndarray) -> np.ndarray:
-    return np.array(0)
+def compress_rgb_frames(frames: np.ndarray) -> np.ndarray:
+    # Vectorized operations go brr.
+    r = frames[..., 0]
+    g = frames[..., 1]
+    b = frames[..., 2]
+    # Compress 24-bit RGB to 8-bit RGB by taking the most significant
+    # bits of each channel.
+    r_slice = (r & 0b11100000) >> 0
+    g_slice = (g & 0b11100000) >> 3
+    b_slice = (b & 0b11000000) >> 6
+    # Concatenate the components.  This also flattens the frames array
+    # from 4D to 3D by converting the pixel axis into uint8 scalars.
+    compressed_frames = r_slice | g_slice | b_slice
+    print("Compressed 24-bit RGB channels into 8-bit scalars.")
+    return compressed_frames
 
 
 def write_bytes(compressed_pixels: np.ndarray) -> None:
@@ -77,6 +90,7 @@ def main() -> None:
 
     rgb_path = mp4_to_rgb(input_path)
     rgb_frames = load_rgb_as_frames(rgb_path)
+    compressed_frames = compress_rgb_frames(rgb_frames)
 
 
 if __name__ == "__main__":
