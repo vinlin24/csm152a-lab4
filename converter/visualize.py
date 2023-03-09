@@ -34,6 +34,14 @@ def secs_to_MMSS(num_secs: float) -> str:
     return f"{int(mins):02}:{secs:05.2f}"
 
 
+def show(frame: np.ndarray, frame_num: int, frame_sec: float, origin_path: Path
+         ) -> None:
+    time_pos = secs_to_MMSS(frame_sec)
+    plt.title(f"{origin_path}: Frame {frame_num} ({time_pos})")
+    plt.imshow(frame)
+    plt.show()
+
+
 def to_24bit(compressed_frame: np.ndarray) -> np.ndarray:
     r = (compressed_frame & 0b11100000) << 0
     g = (compressed_frame & 0b00011100) << 3
@@ -59,11 +67,7 @@ def show_mp4_frame(mp4_path: Path, frame_num: int) -> None:
     capture.set(cv2.CAP_PROP_POS_FRAMES, frame_num)
     frame_pos_ms = capture.get(cv2.CAP_PROP_POS_MSEC)
     frame_pos_sec = frame_pos_ms / 1000
-    time_pos = secs_to_MMSS(frame_pos_sec)
-
-    plt.title(f"Frame {frame_num} ({time_pos})")
-    plt.imshow(frame)
-    plt.show()
+    show(frame, frame_num, frame_pos_sec, mp4_path)
 
 
 def show_rgb_frame(rgb_path: Path, frame_num: int) -> None:
@@ -78,11 +82,7 @@ def show_rgb_frame(rgb_path: Path, frame_num: int) -> None:
     frame = np.reshape(rgb_bytes, (FRAME_NROWS, FRAME_NCOLS, PIXEL_NBYTES))
 
     num_secs = frame_num / FRAMES_PER_SEC
-    time_pos = secs_to_MMSS(num_secs)
-
-    plt.title(f"Frame {frame_num} ({time_pos})")
-    plt.imshow(frame)
-    plt.show()
+    show(frame, frame_num, num_secs, rgb_path)
 
 
 def show_bin_frame(bin_path: Path, frame_num: int) -> None:
@@ -98,11 +98,7 @@ def show_bin_frame(bin_path: Path, frame_num: int) -> None:
     frame = to_24bit(compressed_frame)
 
     num_secs = frame_num / FRAMES_PER_SEC
-    time_pos = secs_to_MMSS(num_secs)
-
-    plt.title(f"Frame {frame_num} ({time_pos})")
-    plt.imshow(frame)
-    plt.show()
+    show(frame, frame_num, num_secs, bin_path)
 
 
 parser = ArgumentParser(prog=Path(sys.argv[0]).name, description=__doc__)
