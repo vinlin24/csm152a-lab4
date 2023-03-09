@@ -43,8 +43,21 @@ def mp4_to_rgb(mp4_path: Path) -> Path:
     print(command)
     run(command)
 
-def mp4_to_rgb(mp4_path: Path) -> np.ndarray:
-    return np.array(0)
+    return output_path
+
+
+def load_rgb_as_frames(rgb_path: Path) -> np.ndarray:
+    rgb_bytes = np.fromfile(rgb_path, dtype=np.uint8)
+
+    assert rgb_bytes.size % FRAME_NBYTES == 0, \
+        f"{rgb_path} has {rgb_bytes.size} bytes, which is not a multiple of " \
+        f"{FRAME_NBYTES}: ({FRAME_NCOLS=})*({FRAME_NROWS=})*({PIXEL_NBYTES=})."
+
+    num_frames: int = rgb_bytes.size // FRAME_NBYTES
+    frames = np.reshape(rgb_bytes,
+                        (num_frames, FRAME_NROWS, FRAME_NCOLS, PIXEL_NBYTES))
+    print(f"Loaded {num_frames} frames from {rgb_path}.")
+    return frames
 
 
 def compress_rgb(pixels: np.ndarray) -> np.ndarray:
@@ -63,6 +76,7 @@ def main() -> None:
         sys.exit(22)
 
     rgb_path = mp4_to_rgb(input_path)
+    rgb_frames = load_rgb_as_frames(rgb_path)
 
 
 if __name__ == "__main__":
