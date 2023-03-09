@@ -122,7 +122,7 @@ def nonnegative_int(value: str) -> int:
 parser.add_argument("input_path", metavar="FILE", type=Path,
                     help="TODO.")
 parser.add_argument("-t", "--type", metavar="FILE_FMT", dest="file_format",
-                    choices=("mp4", "rgb", "bin"), default="bin",
+                    choices=("mp4", "rgb", "bin"),
                     help="TODO.")
 
 offset_group = parser.add_mutually_exclusive_group(required=True)
@@ -138,12 +138,17 @@ offset_group.add_argument("-s", "--seconds", metavar="SECS", dest="num_secs",
 def main() -> None:
     namespace = parser.parse_args()
     input_path: Path = namespace.input_path
-    file_format: Literal["mp4", "rgb", "bin"] = namespace.file_format
+    file_format: Optional[str] = namespace.file_format
     frame_num: Optional[int] = namespace.frame_num
     num_secs: Optional[int] = namespace.num_secs
 
     if num_secs is not None:
         frame_num = secs_to_frame_num(num_secs)
+
+    # Infer the file type from the extension.
+    if file_format is None:
+        extension = input_path.suffix.removeprefix(".")
+        file_format = extension
 
     if file_format == "mp4":
         func = show_mp4_frame
