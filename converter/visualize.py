@@ -15,7 +15,7 @@ import numpy as np
 
 __author__ = "Vincent Lin"
 
-FRAMES_PER_SEC = 16
+FRAMES_PER_SEC = 16.0
 
 FRAME_NCOLS = 160
 FRAME_NROWS = 120
@@ -25,8 +25,10 @@ NUM_PIXELS = FRAME_NCOLS * FRAME_NROWS
 FRAME_NBYTES = NUM_PIXELS * PIXEL_NBYTES
 
 
-def secs_to_frame_num(num_secs: int) -> int:
-    return 0  # TODO.
+def get_mp4_fps(mp4_path: Path) -> float:
+    capture = cv2.VideoCapture(str(mp4_path))
+    fps = capture.get(cv2.CAP_PROP_FPS)
+    return fps
 
 
 def secs_to_MMSS(num_secs: float) -> str:
@@ -64,9 +66,7 @@ def show_mp4_frame(mp4_path: Path, frame_num: int) -> None:
         raise ValueError(
             f"{frame_num} is an invalid frame number for {mp4_path}.")
 
-    capture.set(cv2.CAP_PROP_POS_FRAMES, frame_num)
-    frame_pos_ms = capture.get(cv2.CAP_PROP_POS_MSEC)
-    frame_pos_sec = frame_pos_ms / 1000
+    frame_pos_sec = frame_num / get_mp4_fps(mp4_path)
     show(frame, frame_num, frame_pos_sec, mp4_path)
 
 
@@ -119,6 +119,13 @@ def nonnegative_int(value: str) -> int:
     return as_int
 
 
+def nonnegative_float(value: str) -> float:
+    as_float = float(value)
+    if as_float < 0:
+        raise ArgumentTypeError(f"{value} is an invalid non-negative float.")
+    return as_float
+
+
 parser.add_argument("input_path", metavar="FILE", type=Path,
                     help="TODO.")
 parser.add_argument("-t", "--type", metavar="FILE_FMT", dest="file_format",
@@ -131,7 +138,7 @@ offset_group.add_argument("-f", "--frame", metavar="FRAME", dest="frame_num",
                           type=nonnegative_int,
                           help="TODO.")
 offset_group.add_argument("-s", "--seconds", metavar="SECS", dest="num_secs",
-                          type=nonnegative_int,
+                          type=nonnegative_float,
                           help="TODO.")
 
 
@@ -140,10 +147,7 @@ def main() -> None:
     input_path: Path = namespace.input_path
     file_format: Optional[str] = namespace.file_format
     frame_num: Optional[int] = namespace.frame_num
-    num_secs: Optional[int] = namespace.num_secs
-
-    if num_secs is not None:
-        frame_num = secs_to_frame_num(num_secs)
+    num_secs: Optional[float] = namespace.num_secs
 
     # Infer the file type from the extension.
     if file_format is None:
@@ -152,12 +156,18 @@ def main() -> None:
 
     if file_format == "mp4":
         func = show_mp4_frame
+        fps = get_mp4_fps(input_path)
     elif file_format == "rgb":
         func = show_rgb_frame
+        fps = FRAMES_PER_SEC
     elif file_format == "bin":
         func = show_bin_frame
+        fps = FRAMES_PER_SEC
     else:
         raise ValueError(f"Invalid file format: {file_format!r}.")
+
+    if num_secs is not None:
+        frame_num = int(num_secs * fps)
 
     func(input_path, frame_num)  # type: ignore
 
