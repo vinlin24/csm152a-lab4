@@ -67,7 +67,12 @@ def show_mp4_frame(mp4_path: Path, frame_num: int) -> None:
             f"{frame_num} is an invalid frame number for {mp4_path}.")
 
     frame_pos_sec = frame_num / get_mp4_fps(mp4_path)
-    show(frame, frame_num, frame_pos_sec, mp4_path)
+    time_pos = secs_to_MMSS(frame_pos_sec)
+    title = f"{mp4_path}: Frame {frame_num} ({time_pos})"
+    cv2.imshow(title, frame)
+    cv2.waitKey(0)
+    capture.release()
+    cv2.destroyAllWindows()
 
 
 def show_rgb_frame(rgb_path: Path, frame_num: int) -> None:
