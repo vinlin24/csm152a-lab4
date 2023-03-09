@@ -11,10 +11,17 @@ from typing import Literal, Optional
 
 import cv2
 import matplotlib.pyplot as plt
+import numpy as np
 
 __author__ = "Vincent Lin"
 
 FRAMES_PER_SEC = 16
+
+FRAME_NCOLS = 160
+FRAME_NROWS = 120
+PIXEL_NBYTES = 3
+
+FRAME_NBYTES = FRAME_NCOLS * FRAME_NROWS * PIXEL_NBYTES
 
 
 def secs_to_frame_num(num_secs: int) -> int:
@@ -41,17 +48,31 @@ def show_mp4_frame(mp4_path: Path, frame_num: int) -> None:
     frame_pos_sec = frame_pos_ms / 1000
     time_pos = secs_to_MMSS(frame_pos_sec)
 
-    cv2.imshow(f"Frame {frame_num} ({time_pos})", frame)
-    cv2.waitKey(0)
-    capture.release()
-    cv2.destroyAllWindows()
+    plt.title(f"Frame {frame_num} ({time_pos})")
+    plt.imshow(frame)
+    plt.show()
 
 
-def show_rgb_frame(input_file: Path, frame_num: int) -> None:
-    pass
+def show_rgb_frame(rgb_path: Path, frame_num: int) -> None:
+    offset = frame_num * FRAME_NBYTES
+
+    rgb_bytes = np.fromfile(rgb_path, dtype=np.uint8,
+                            count=FRAME_NBYTES, offset=offset)
+
+    assert rgb_bytes.size == FRAME_NBYTES, \
+        f"{rgb_path} has {rgb_bytes.size} bytes, expected {FRAME_NBYTES}."
+
+    frame = np.reshape(rgb_bytes, (FRAME_NROWS, FRAME_NCOLS, PIXEL_NBYTES))
+
+    num_secs = frame_num / FRAMES_PER_SEC
+    time_pos = secs_to_MMSS(num_secs)
+
+    plt.title(f"Frame {frame_num} ({time_pos})")
+    plt.imshow(frame)
+    plt.show()
 
 
-def show_bin_frame(input_file: Path, frame_num: int) -> None:
+def show_bin_frame(input_path: Path, frame_num: int) -> None:
     pass
 
 
