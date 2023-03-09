@@ -180,5 +180,8 @@ cython_debug/
 *.mp4
 *.rgb
 *.bin
+*.tar
+*.tgz
+*.tar.gz
 
 ##### END: Custom addendums to the official .gitignore template. #####

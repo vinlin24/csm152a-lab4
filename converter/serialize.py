@@ -86,6 +86,17 @@ def write_bytes(compressed_pixels: np.ndarray, bin_path: Path) -> None:
     print(f"Wrote {num_kilobytes:.2f}K to {bin_path}.")
 
 
+def write_txts(compressed_pixels: np.ndarray, dir_path: Path) -> None:
+    dir_path.mkdir(parents=True, exist_ok=True)
+    frame_num = -1
+    for frame_num, compressed_frame in enumerate(compressed_pixels):
+        txt_path = dir_path / Path(f"frame_{frame_num:04x}.txt")
+        linear_frame_bytes = compressed_frame.flatten()
+        np.savetxt(txt_path, linear_frame_bytes, delimiter="\n", fmt="%02x")
+    num_txts = frame_num + 1
+    print(f"Wrote compressed frames to {num_txts} txt files in {dir_path}.")
+
+
 parser = ArgumentParser(prog=Path(sys.argv[0]).name, description=__doc__)
 
 parser.add_argument("mp4_path", metavar="MP4_FILE", type=Path,
@@ -93,12 +104,16 @@ parser.add_argument("mp4_path", metavar="MP4_FILE", type=Path,
 parser.add_argument("bin_path", metavar="BIN_FILE", type=Path, nargs="?",
                     help="path of serialized binary, defaults to the stem of "
                          "MP4_FILE + \".bin\"")
+parser.add_argument("-t", "--txt", metavar="TXTS_DIR", type=Path,
+                    dest="txts_dir",
+                    help="path of directory to save txt frames under")
 
 
 def main() -> None:
     namespace = parser.parse_args()
     mp4_path: Path = namespace.mp4_path
     bin_path: Optional[Path] = namespace.bin_path
+    txts_dir: Optional[Path] = namespace.txts_dir
 
     rgb_path = mp4_to_rgb(mp4_path)
     rgb_frames = load_rgb_as_frames(rgb_path)
@@ -108,6 +123,9 @@ def main() -> None:
         bin_path = mp4_path.parent / Path(mp4_path.stem + ".bin")
 
     write_bytes(compressed_frames, bin_path)
+
+    if txts_dir is not None:
+        write_txts(compressed_frames, txts_dir)
 
 
 if __name__ == "__main__":

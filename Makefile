@@ -8,9 +8,15 @@ all:
 
 # For example, if you have a video named foo.mp4, run `make foo.bin`.
 %.bin: %.mp4
-	python converter/serialize.py $< $@
+	python converter/serialize.py $< $@ --txt $(basename $<)
+
+%.tgz: %
+	cd $< && tar -czf ../$@ .
 
 .PHONY: clean
 clean:
 	-find . -type f -name "*.bin" -delete
 	-find . -type f -name "*.rgb" -delete
+	-find . -type f -name "frame_*.txt" -delete
+	-find . -type d -empty -delete
+	-find . -type f -name "*.tgz" -delete
