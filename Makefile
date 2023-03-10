@@ -8,10 +8,12 @@ all:
 
 # For example, if you have a video named foo.mp4, run `make foo.bin`.
 %.bin: %.mp4
-	python converter/serialize.py $< $@ --txt $(basename $<)
+	python converter/serialize.py $< $@
 
-.SECONDARY: $(wildcard *.bin)
-%.tgz: %.bin
+# For example, if you have a video named foo.mp4, run `make foo.tgz`.
+%.tgz: %.mp4
+	python converter/serialize.py $< $(basename $<).bin \
+		--txt $(basename $<)
 	cd $(basename $<) && tar -czf ../$@ .
 
 .PHONY: clean
