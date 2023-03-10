@@ -89,10 +89,9 @@ numbers are seconds into the video are supported. For example:
 
 ```sh
 # Show the frame 8 seconds into foo.mp4:
-./show foo.mp4 -s 8
+./show.sh foo.mp4 -s 8
 # Compare the coloring of the 200th frame (assuming 16fps):
-./show foo.bin -f 200
-./show foo.rgb -f 200
+./show.sh foo.bin -f 200 & ./show.sh foo.rgb -f 200 &
 ```
 
 
