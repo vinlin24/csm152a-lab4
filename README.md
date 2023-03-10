@@ -99,10 +99,10 @@ numbers are seconds into the video are supported. For example:
 ### Cleanup
 
 
-To clean the directory of the binary products and intermediates, simply run:
+To clean the directory of binary and `.txt` intermediates, simply run:
 
 ```sh
 make clean
 ```
 
-Original MP4 video files are preserved.
+Original MP4 video files as well as the TGZ distributables are preserved.

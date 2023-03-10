@@ -22,4 +22,3 @@ clean:
 	-find . -type f -name "*.rgb" -delete
 	-find . -type f -name "frame_*.txt" -delete
 	-find . -type d -empty -delete
-	-find . -type f -name "*.tgz" -delete
