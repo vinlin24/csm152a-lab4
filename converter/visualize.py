@@ -108,6 +108,24 @@ def show_bin_frame(bin_path: Path, frame_num: int) -> None:
     show(frame, frame_num, num_secs, bin_path)
 
 
+def show_txt_frame(txt_path: Path, frame_num: int) -> None:
+    def from_hex(s: str) -> int:
+        return int(s, 16)
+
+    if txt_path.is_dir():
+        as_hex = hex(frame_num)[2:].zfill(4)
+        txt_path = txt_path / Path(f"frame_{as_hex}.txt")
+
+    txt_bytes = np.loadtxt(txt_path, dtype=np.uint8, encoding="utf-8",
+                           converters=from_hex)  # type: ignore
+    compressed_frame = np.reshape(txt_bytes, (FRAME_NROWS, FRAME_NCOLS))
+    frame = to_24bit(compressed_frame)
+
+    frame_num = from_hex(txt_path.stem[-4:])
+    num_secs = frame_num / FRAMES_PER_SEC
+    show(frame, frame_num, num_secs, txt_path)
+
+
 parser = ArgumentParser(prog=Path(sys.argv[0]).name, description=__doc__)
 
 
@@ -136,8 +154,9 @@ def nonnegative_float(value: str) -> float:
 parser.add_argument("input_path", metavar="FILE", type=Path,
                     help="video file whose frame is to be viewed")
 parser.add_argument("-t", "--type", metavar="FILE_FMT", dest="file_format",
-                    choices=("mp4", "rgb", "bin"),
-                    help="file type, inferred from file extension by default")
+                    choices=("mp4", "rgb", "bin", "txt"),
+                    help="file type, inferred from file extension by default "
+                         "(directory names are inferred as txt directories)")
 
 offset_group = parser.add_mutually_exclusive_group(required=True)
 
@@ -169,6 +188,14 @@ def main() -> None:
         fps = FRAMES_PER_SEC
     elif file_format == "bin":
         func = show_bin_frame
+        fps = FRAMES_PER_SEC
+    elif file_format == "txt":
+        func = show_txt_frame
+        fps = FRAMES_PER_SEC
+    # If given the name of a directory, assume they want to display one
+    # of the txt frame files within it.
+    elif input_path.is_dir():
+        func = show_txt_frame
         fps = FRAMES_PER_SEC
     else:
         raise ValueError(f"Invalid file format: {file_format!r}.")

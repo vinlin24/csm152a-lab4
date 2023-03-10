@@ -92,6 +92,8 @@ numbers are seconds into the video are supported. For example:
 ./show.sh foo.mp4 -s 8
 # Compare the coloring of the 200th frame (assuming 16fps):
 ./show.sh foo.bin -f 200 & ./show.sh foo.rgb -f 200 &
+# Confirm that a frame txt file has the right bytes:
+./show.sh foo -f 0x30 & ./how.sh foo.bin -f 0x30 &
 ```
 
 
