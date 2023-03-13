@@ -170,6 +170,8 @@ cython_debug/
 
 # Playground for throwaway code
 /temp/
+tb.v
+*.out
 
 # Testing files
 *.txt

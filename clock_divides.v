@@ -1,10 +1,14 @@
+`define MASTER_CLOCK_HERTZ 50000000
+
 module clk_div(
     // Inputs
-    input wire clk,   // master clock: 50MHz
-    input wire rst,   // asynchronous reset
+    input wire clk,     // Master clock: 50MHz
+    input wire rst,     // Asynchronous reset
     // Outputs
-    output wire dclk  // pixel clock: 16Hz (3.125M master clock pulses)
+    output wire new_clk // Frequency equal to param hertz
 );
+
+    parameter integer HERTZ = 16;
 
     integer pixel_count;
     reg pixel_clk_reg;
@@ -19,7 +23,7 @@ module clk_div(
             pixel_count <= 0;
             pixel_clk_reg <= 0;
         end
-        else if (pixel_count == 3_125_000) begin
+        else if (pixel_count == `MASTER_CLOCK_HERTZ / HERTZ) begin
             pixel_count <= 0;
             pixel_clk_reg <= ~pixel_clk_reg;
         end
@@ -29,6 +33,6 @@ module clk_div(
         end
     end
 
-    assign dclk = pixel_clk_reg;
+    assign new_clk = pixel_clk_reg;
 
 endmodule
