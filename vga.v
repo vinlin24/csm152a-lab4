@@ -8,8 +8,8 @@ output             hs;
 output    [9:0]    vpixel;
 output    [9:0]    hpixel;
    
-parameter [9:0]    hpixel_temp = 10'b1100100000;
-parameter [9:0]    vpixel_temp = 10'b1000001001;
+parameter [9:0]    hpixel_temp = 10'b1010000000;//10'b1100100000
+parameter [9:0]    vpixel_temp = 10'b0111100000;//10'b1000001001
    
 parameter [9:0]    hspluse_wide = 10'b0001100000;
 parameter [2:0]    vspluse_wide = 3'b010;
