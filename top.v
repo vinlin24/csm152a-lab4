@@ -1,44 +1,29 @@
-module top(
-	// Inputs
-	input wire clk,
-	// Buttons
-	input wire button_display,
-	// Outputs
-	output [7:0] rgb,
-	output wire hsync,
-	output wire vsync
-    );
+`timescale 1 ns / 1 ns
 
-	// Wires for horizontal and vertical counters
-	wire [9:0] xCoord;
-	wire [9:0] yCoord;
-	
-	// Wires for clocks
-	wire dclk;
-	
-	// Generate display clock and in-game clock
-	clk_div clk_div(
-		.clk(clk),
-		.rst(button_display),
-		.dclk(dclk)
-	);
-	
-	// VGA controller
-	vga_controller controller(
-		.clk(dclk),
-		.rst(button_display),
-		.hsync(hsync),
-		.vsync(vsync),
-		.xCoord(xCoord),
-		.yCoord(yCoord)
-	);
-	
-	// VGA display
-	vga_display display(
-		.clk(clk),
-		.xCoord(xCoord),
-		.yCoord(yCoord),
-		.rgb(rgb)
-	);
 
+module top(i_clk, rgb, vs, hs, rst, seg, an);
+   input        i_clk;
+   input        rst;
+   output [7:0] rgb;
+   output       vs;
+   output       hs;
+	output      seg;
+	output[3:0]  an;
+	//output		 Led6;
+   assign seg = rst;
+	assign an = tempAn;
+   
+   wire         clk25;
+   wire [9:0]   vcount;
+   wire [9:0]   hcount;
+   wire [3:0]   keynum;
+	reg [3:0] 	tempAn = 4'b1111;
+   
+  
+   clk_div u1(.clk_in(i_clk), .clk_25(clk25));
+   
+   vga u2(.clk_25(clk25), .vs(vs), .hs(hs), .vpixel(vcount), .hpixel(hcount));
+   
+  draw_new u3(.clk_25(clk25), .v_count(vcount), .h_count(hcount), .rgb(rgb), .rst(rst), .jump(jump));
+   
 endmodule
