@@ -59,7 +59,10 @@ def main() -> None:
 
     frames = np.reshape(bin_bytes, (num_frames, FRAME_NROWS, FRAME_NCOLS))
 
-    assignments = frame_to_assignments(frames[0], 0)
+    result = io.StringIO()
+    for frame_num, frame in enumerate(frames):
+        assignments = frame_to_assignments(frame, frame_num)
+        result.write(assignments)
 
     if txt_path is None:
         dest = sys.stdout
@@ -67,7 +70,7 @@ def main() -> None:
         dest = txt_path.open("wt", encoding="utf-8")
 
     with dest:
-        dest.write(assignments)
+        dest.write(result.getvalue())
 
 
 if __name__ == "__main__":
