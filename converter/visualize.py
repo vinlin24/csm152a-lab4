@@ -15,11 +15,8 @@ import numpy as np
 
 __author__ = "Vincent Lin"
 
-FRAMES_PER_SEC = 16.0
-
-FRAME_NCOLS = 160
-FRAME_NROWS = 120
-PIXEL_NBYTES = 3
+from constants import FPS as FRAMES_PER_SEC
+from constants import FRAME_NCOLS, FRAME_NROWS, PIXEL_NBYTES
 
 NUM_PIXELS = FRAME_NCOLS * FRAME_NROWS
 FRAME_NBYTES = NUM_PIXELS * PIXEL_NBYTES

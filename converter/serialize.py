@@ -12,18 +12,15 @@ from pathlib import Path
 from typing import Optional
 
 import numpy as np
+from constants import FPS, FRAME_NCOLS, FRAME_NROWS, PIXEL_NBYTES
 
 __author__ = "Vincent Lin"
 
 FFMPEG_OPTIONS = {
-    "vf": "scale=160:120",
-    "r": 16,
+    "vf": f"scale={FRAME_NCOLS}:{FRAME_NROWS}",
+    "r": FPS,
     "pix_fmt": "rgb24",
 }
-
-FRAME_NCOLS = 160
-FRAME_NROWS = 120
-PIXEL_NBYTES = 3
 
 FRAME_NBYTES = FRAME_NCOLS * FRAME_NROWS * PIXEL_NBYTES
 

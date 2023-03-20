@@ -12,12 +12,7 @@ from pathlib import Path
 from typing import List, Optional
 
 import numpy as np
-
-FRAME_NCOLS = 160
-FRAME_NROWS = 120
-PIXEL_NBYTES = 3
-
-FRAME_NBYTES = FRAME_NCOLS * FRAME_NROWS * PIXEL_NBYTES
+from constants import FRAME_NCOLS, FRAME_NROWS, PIXEL_NBYTES
 
 ARRAY_NAME = "frames"
 
