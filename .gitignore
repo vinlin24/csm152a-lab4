@@ -186,4 +186,7 @@ tb.v
 *.tgz
 *.tar.gz
 
+# Submission files
+submission/
+
 ##### END: Custom addendums to the official .gitignore template. #####
