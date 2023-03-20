@@ -41,8 +41,8 @@ file is transformed:
 ```mermaid
 flowchart TD;
   mp4[foo.mp4\nOrdinary video file];
-  rgb[foo.rgb\n160x120px RGB24 16fps];
-  bin[foo.bin\n160x120px 8-bit VGA pixels 16fps];
+  rgb[foo.rgb\n40x30px RGB24 2fps];
+  bin[foo.bin\n40x30px 8-bit VGA pixels 2fps];
   txt[foo.txt\n8-bit VGA pixels as array assignments];
   v[foo.v\nSource file containing hard-coded array];
   mp4-.-> |serialize.py: ffmpeg| rgb;
@@ -60,9 +60,9 @@ I provided Makefile rules as front-ends for invoking my
 scripts for building each format from the original MP4 file. Suppose it is named
 `foo.mp4`.
 
-* `make foo.rgb`: Convert to a 160x120px resolution, 16 frames-per-second, RGB24
+* `make foo.rgb`: Convert to a 40x30px resolution, 2 frames-per-second, RGB24
   file.
-* `make foo.bin`: Convert to a 160x120px resolution, 16 frames-per-second, 8-bit
+* `make foo.bin`: Convert to a 40x30px resolution, 2 frames-per-second, 8-bit
   VGA color-encoded (`rrrgggbb` per pixel) file.
 * `make foo.txt`: The same video properties as the `.bin` format but outputted
   as Verilog array assignment statements intended to be copy-pasted into a
@@ -83,7 +83,7 @@ numbers are seconds into the video are supported. For example:
 ```sh
 # Show the frame 8 seconds into foo.mp4:
 ./show.sh foo.mp4 -s 8
-# Compare the coloring of the 200th frame (assuming 16fps):
+# Compare the coloring of the 200th frame (assuming 2fps):
 ./show.sh foo.bin -f 200 & ./show.sh foo.rgb -f 200 &
 # Confirm that a frame txt file has the right bytes:
 ./show.sh foo -f 0x30 & ./how.sh foo.bin -f 0x30 &
