@@ -20,11 +20,11 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-You will also need [FFmpeg](https://ffmpeg.org/download.html) installed.
-You can probably obtain it using your local package manager. For Windows, you
-can download a static build and place the `ffmpeg.exe` binary some place
-on your `PATH`. I used the [Chocolatey](https://chocolatey.org/) package manager
-for Windows instead:
+You will also need [FFmpeg](https://ffmpeg.org/download.html) installed.  You
+can probably obtain it using your local package manager. For Windows, you can
+download a static build and place the `ffmpeg.exe` binary some place on your
+`PATH`. I used the [Chocolatey](https://chocolatey.org/) package manager for
+Windows instead:
 
 ```powershell
 # In an elevated PowerShell session:
@@ -39,15 +39,15 @@ The following graphic shows the different file formats into which an input MP4
 file is transformed:
 
 ```mermaid
-flowchart LR;
+flowchart TD;
   mp4[foo.mp4\nOrdinary video file];
-  rgb[foo.rgb\n160x120px\nRGB24 16fps];
-  bin[foo.bin\n160x120px\n8-bit VGA pixels 16fps];
-  txt[foo.txt\n8-bit VGA pixels\nas array assignments];
-  v[foo.v\nSource file containing\nhard-coded array];
-  mp4-.->rgb;
-  rgb-.->bin;
-  rgb-.->txt;
+  rgb[foo.rgb\n160x120px RGB24 16fps];
+  bin[foo.bin\n160x120px 8-bit VGA pixels 16fps];
+  txt[foo.txt\n8-bit VGA pixels as array assignments];
+  v[foo.v\nSource file containing hard-coded array];
+  mp4-.-> |serialize.py: ffmpeg| rgb;
+  rgb-.-> |serialize.py: numpy| bin;
+  bin-.-> |transpile.py: numpy| txt;
   txt--> |copy-paste| v;
 ```
 
@@ -56,8 +56,9 @@ flowchart LR;
 
 
 I provided Makefile rules as front-ends for invoking my
-[serialize.py](converter/serialize.py)/[transpile.py](converter/transpile.py) scripts for building each format from the
-original MP4 file. Suppose it is named `foo.mp4`.
+[serialize.py](converter/serialize.py)/[transpile.py](converter/transpile.py)
+scripts for building each format from the original MP4 file. Suppose it is named
+`foo.mp4`.
 
 * `make foo.rgb`: Convert to a 160x120px resolution, 16 frames-per-second, RGB24
   file.
