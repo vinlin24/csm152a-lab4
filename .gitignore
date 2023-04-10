@@ -189,4 +189,6 @@ tb.v
 # Submission files
 submission/
 
+!/demo/demo.mp4
+
 ##### END: Custom addendums to the official .gitignore template. #####
